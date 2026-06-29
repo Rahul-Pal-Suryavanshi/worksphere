@@ -4,6 +4,7 @@ import com.worksphere.api.dto.AuthResponse;
 import com.worksphere.api.dto.LoginRequest;
 import com.worksphere.api.dto.RegisterRequest;
 import com.worksphere.api.entity.User;
+import com.worksphere.api.enums.Role;
 import com.worksphere.api.repository.UserRepository;
 import com.worksphere.api.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
