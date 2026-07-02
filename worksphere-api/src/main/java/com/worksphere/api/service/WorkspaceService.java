@@ -36,7 +36,6 @@ public class WorkspaceService {
                 .owner(user)
                 .build();
 
-        System.out.println("Inside create"+request.getName());
         Workspace savedWorkspace = workspaceRepository.save(workspace);
 
 
@@ -57,14 +56,6 @@ public class WorkspaceService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->
                         new RuntimeException("User not found"));
-
-        System.out.println("Inside get"+authentication.getName());
-
-        workspaceRepository.findByOwner(user)
-                .forEach(w->{
-                    System.out.println(w.getName());
-                    System.out.println(w.getOwner());
-                });
 
         return workspaceRepository.findByOwner(user)
                 .stream()

@@ -3,17 +3,16 @@ package com.worksphere.api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "workspaces")
+@Table(name = "projects")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Workspace {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,10 +20,9 @@ public class Workspace {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    private String description;
 
-    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL)
-    private List<Project> projects;
+    @ManyToOne
+    @JoinColumn(name = "workspace_id")
+    private Workspace workspace;
 }
