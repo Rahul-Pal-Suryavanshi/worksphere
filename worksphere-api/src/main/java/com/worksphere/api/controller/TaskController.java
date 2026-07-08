@@ -3,6 +3,7 @@ package com.worksphere.api.controller;
 
 import com.worksphere.api.dto.TaskRequest;
 import com.worksphere.api.dto.TaskResponse;
+import com.worksphere.api.dto.UpdateTaskStatusRequest;
 import com.worksphere.api.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -39,5 +40,18 @@ public class TaskController {
 
         return taskService.getTaskByProject(
                 projectId, authentication);
+    }
+
+    @PatchMapping("/{taskId}/status")
+    public TaskResponse updateTaskStatus(
+            @PathVariable UUID taskId,
+            @RequestBody UpdateTaskStatusRequest request,
+            Authentication authentication
+            ){
+        return taskService.updateTaskStatus(
+                taskId,
+                request,
+                authentication
+        );
     }
 }

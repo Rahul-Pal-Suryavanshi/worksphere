@@ -3,6 +3,7 @@ package com.worksphere.api.service;
 
 import com.worksphere.api.dto.TaskRequest;
 import com.worksphere.api.dto.TaskResponse;
+import com.worksphere.api.dto.UpdateTaskStatusRequest;
 import com.worksphere.api.entity.Project;
 import com.worksphere.api.entity.Task;
 import com.worksphere.api.entity.User;
@@ -99,7 +100,7 @@ public class TaskService {
 
         if(!workspace.getOwner().getId()
                 .equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to access this prokect");
+            throw new RuntimeException("You are not allowed to access this project");
         }
 
         return taskRepository.findByProject(project)
@@ -115,5 +116,43 @@ public class TaskService {
                         .createdAt(task.getCreatedAt())
                         .build())
                 .toList();
+    }
+
+    public TaskResponse updateTaskStatus(
+            UUID taskId,
+            UpdateTaskStatusRequest request,
+            Authentication authentication
+    ){
+
+        String email = authentication.getName();
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new RuntimeException("User Not Found"));
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()->
+                        new RuntimeException("Task Not Found"));
+
+        Workspace workspace = task.getProject().getWorkspace();
+
+        if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
+            throw new RuntimeException("You are not allowed to update this task");
+        }
+
+        task.setStatus(request.getStatus());
+
+        Task updatedTask = taskRepository.save(task);
+
+        return TaskResponse.builder()
+                .id(updatedTask.getId())
+                .title(updatedTask.getTitle())
+                .description(updatedTask.getDescription())
+                .status(updatedTask.getStatus())
+                .priority(updatedTask.getPriority())
+                .assignedUserEmail(updatedTask.getAssignedUser().getEmail())
+                .projectName(updatedTask.getProject().getName())
+                .createdAt(updatedTask.getCreatedAt())
+                .build();
     }
 }
