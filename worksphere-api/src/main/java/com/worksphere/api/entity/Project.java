@@ -1,8 +1,10 @@
 package com.worksphere.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,4 +27,9 @@ public class Project {
     @ManyToOne
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "project",
+    cascade = CascadeType.ALL)
+    private List<Task> tasks;
 }
