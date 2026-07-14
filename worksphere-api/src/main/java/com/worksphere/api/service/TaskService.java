@@ -3,6 +3,7 @@ package com.worksphere.api.service;
 
 import com.worksphere.api.dto.TaskRequest;
 import com.worksphere.api.dto.TaskResponse;
+import com.worksphere.api.dto.UpdateTaskRequest;
 import com.worksphere.api.dto.UpdateTaskStatusRequest;
 import com.worksphere.api.entity.Project;
 import com.worksphere.api.entity.Task;
@@ -154,5 +155,70 @@ public class TaskService {
                 .projectName(updatedTask.getProject().getName())
                 .createdAt(updatedTask.getCreatedAt())
                 .build();
+    }
+
+    public TaskResponse updateTask(
+            UUID taskId,
+            UpdateTaskRequest request,
+            Authentication authentication
+    ){
+        String email = authentication.getName();
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new RuntimeException("User Not found"));
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()->
+                        new RuntimeException("Task Not Found"));
+
+        Workspace workspace = task.getProject().getWorkspace();
+
+        if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
+            throw new RuntimeException("You are not allowed to update this task");
+        }
+
+        User assignedUser = userRepository.findByEmail(request.getAssignedUserEmail())
+                .orElseThrow(()->
+                        new RuntimeException("Assigned User Not Found"));
+
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setPriority(request.getPriority());
+        task.setAssignedUser(assignedUser);
+
+        Task updatedTask = taskRepository.save(task);
+
+        return TaskResponse.builder()
+                .id(updatedTask.getId())
+                .title(updatedTask.getTitle())
+                .description(updatedTask.getDescription())
+                .status(updatedTask.getStatus())
+                .priority(updatedTask.getPriority())
+                .assignedUserEmail(updatedTask.getAssignedUser().getEmail())
+                .projectName(updatedTask.getProject().getName())
+                .createdAt(updatedTask.getCreatedAt())
+                .build();
+    }
+
+    public void deleteTask(UUID taskId, Authentication authentication){
+
+        String email = authentication.getName();
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new RuntimeException("User Not found"));
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()->
+                        new RuntimeException("Task Not Found"));
+
+        Workspace workspace = task.getProject().getWorkspace();
+
+        if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
+            throw new RuntimeException("You are not allowed to delete this task");
+        }
+
+        taskRepository.delete(task);
     }
 }

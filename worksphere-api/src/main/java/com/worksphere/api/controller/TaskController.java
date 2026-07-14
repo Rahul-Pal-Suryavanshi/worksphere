@@ -3,9 +3,11 @@ package com.worksphere.api.controller;
 
 import com.worksphere.api.dto.TaskRequest;
 import com.worksphere.api.dto.TaskResponse;
+import com.worksphere.api.dto.UpdateTaskRequest;
 import com.worksphere.api.dto.UpdateTaskStatusRequest;
 import com.worksphere.api.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,5 +55,25 @@ public class TaskController {
                 request,
                 authentication
         );
+    }
+
+    @PutMapping("/{taskId}")
+    public TaskResponse updateTask(
+            @PathVariable UUID taskId,
+            @RequestBody UpdateTaskRequest request,
+            Authentication authentication
+            ){
+        return taskService.updateTask(taskId, request, authentication);
+    }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable UUID taskId,
+            Authentication authentication
+    ){
+
+        taskService.deleteTask(taskId, authentication);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     List<Project> findByWorkspace(Workspace workspace);
+
+    long countByWorkspace(Workspace workspace);
 }
