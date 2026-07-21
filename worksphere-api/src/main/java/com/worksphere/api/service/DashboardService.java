@@ -5,6 +5,8 @@ import com.worksphere.api.entity.Project;
 import com.worksphere.api.entity.User;
 import com.worksphere.api.entity.Workspace;
 import com.worksphere.api.enums.TaskStatus;
+import com.worksphere.api.exception.ResourceNotFoundException;
+import com.worksphere.api.exception.UnauthorizedException;
 import com.worksphere.api.repository.ProjectRepository;
 import com.worksphere.api.repository.TaskRepository;
 import com.worksphere.api.repository.UserRepository;
@@ -33,14 +35,14 @@ public class DashboardService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User Not Found"));
+                        new ResourceNotFoundException("User Not Found"));
 
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to access this workspace");
+            throw new UnauthorizedException("You are not allowed to access this workspace");
         }
 
         List<Project> projects = projectRepository.findByWorkspace(workspace);

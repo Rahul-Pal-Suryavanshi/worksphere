@@ -5,6 +5,8 @@ import com.worksphere.api.dto.LoginRequest;
 import com.worksphere.api.dto.RegisterRequest;
 import com.worksphere.api.entity.User;
 import com.worksphere.api.enums.Role;
+import com.worksphere.api.exception.ResourceNotFoundException;
+import com.worksphere.api.exception.UnauthorizedException;
 import com.worksphere.api.repository.UserRepository;
 import com.worksphere.api.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +41,10 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request){
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new RuntimeException("User not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new RuntimeException("Invalid Password");
+            throw new UnauthorizedException("Invalid Password");
         }
 
         String token = jwtService.generateToken(user.getEmail());

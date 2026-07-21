@@ -6,6 +6,7 @@ import com.worksphere.api.dto.TaskResponse;
 import com.worksphere.api.dto.UpdateTaskRequest;
 import com.worksphere.api.dto.UpdateTaskStatusRequest;
 import com.worksphere.api.service.TaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ public class TaskController {
     @PostMapping("{projectId}")
     public TaskResponse createTask(
             @PathVariable UUID projectId,
-            @RequestBody TaskRequest request,
+            @Valid @RequestBody TaskRequest request,
             Authentication authentication
             ){
         return taskService.createTask(
@@ -47,7 +48,7 @@ public class TaskController {
     @PatchMapping("/{taskId}/status")
     public TaskResponse updateTaskStatus(
             @PathVariable UUID taskId,
-            @RequestBody UpdateTaskStatusRequest request,
+            @Valid @RequestBody UpdateTaskStatusRequest request,
             Authentication authentication
             ){
         return taskService.updateTaskStatus(
@@ -60,7 +61,7 @@ public class TaskController {
     @PutMapping("/{taskId}")
     public TaskResponse updateTask(
             @PathVariable UUID taskId,
-            @RequestBody UpdateTaskRequest request,
+            @Valid @RequestBody UpdateTaskRequest request,
             Authentication authentication
             ){
         return taskService.updateTask(taskId, request, authentication);

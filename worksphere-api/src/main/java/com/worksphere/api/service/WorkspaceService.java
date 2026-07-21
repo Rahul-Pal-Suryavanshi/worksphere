@@ -6,6 +6,9 @@ import com.worksphere.api.entity.User;
 import com.worksphere.api.entity.Workspace;
 import com.worksphere.api.entity.WorkspaceMember;
 import com.worksphere.api.enums.WorkspaceRole;
+import com.worksphere.api.exception.BadRequestException;
+import com.worksphere.api.exception.ResourceNotFoundException;
+import com.worksphere.api.exception.UnauthorizedException;
 import com.worksphere.api.repository.UserRepository;
 import com.worksphere.api.repository.WorkspaceMemberRepository;
 import com.worksphere.api.repository.WorkspaceRepository;
@@ -92,16 +95,16 @@ public class WorkspaceService {
 
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         //Only owner can invite members
         WorkspaceMember ownerMember = workspaceMemberRepository
                 .findByWorkspaceAndUser(workspace, loggedInUser)
                 .orElseThrow(()->
-                        new RuntimeException("You are not a workspace member"));
+                        new UnauthorizedException("You are not a workspace member"));
 
         if(ownerMember.getRole() != WorkspaceRole.OWNER){
-            throw new RuntimeException("Only owner can invite members");
+            throw new UnauthorizedException("Only owner can invite members");
         }
 
         User invitedUser = userRepository.findByEmail(request.getEmail())
@@ -109,7 +112,7 @@ public class WorkspaceService {
                         new RuntimeException("Invited User Not Found"));
 
         if(workspaceMemberRepository.existsByWorkspaceAndUser(workspace, invitedUser)){
-            throw new RuntimeException("User is already a workspace member");
+            throw new BadRequestException("User is already a workspace member");
         }
 
         WorkspaceMember member = WorkspaceMember.builder()
@@ -141,7 +144,7 @@ public class WorkspaceService {
 
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         workspaceMemberRepository.findByWorkspaceAndUser(workspace, loggedInUser)
                 .orElseThrow(()->
@@ -173,14 +176,14 @@ public class WorkspaceService {
 
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         WorkspaceMember ownerMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, loggedInUser)
                 .orElseThrow(()->
-                        new RuntimeException("You are not a workspace member"));
+                        new BadRequestException("You are not a workspace member"));
 
         if(ownerMember.getRole()!= WorkspaceRole.OWNER){
-            throw  new RuntimeException("Only owner can change roles");
+            throw  new UnauthorizedException("Only owner can change roles");
         }
 
         WorkspaceMember member = workspaceMemberRepository
@@ -188,11 +191,11 @@ public class WorkspaceService {
                 .orElseThrow(()-> new RuntimeException("Member not found"));
 
         if(!member.getWorkspace().getId().equals(workspaceId)){
-            throw new RuntimeException("Member does not belong this workspace");
+            throw new ResourceNotFoundException("Member does not belong this workspace");
         }
 
         if(member.getRole() == WorkspaceRole.OWNER){
-            throw new RuntimeException("Owner role cannot be changed");
+            throw new BadRequestException("Owner role cannot be changed");
         }
 
         member.setRole(request.getRole());
@@ -217,31 +220,31 @@ public class WorkspaceService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User not found"));
+                        new ResourceNotFoundException("User not found"));
 
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         WorkspaceMember ownerMember = workspaceMemberRepository.findByWorkspaceAndUser(workspace, loggedInUser)
                 .orElseThrow(()->
                         new RuntimeException("You are not a workspace member"));
 
         if(ownerMember.getRole()!= WorkspaceRole.OWNER){
-            throw  new RuntimeException("Only owner can remove members");
+            throw  new UnauthorizedException("Only owner can remove members");
         }
 
         WorkspaceMember member = workspaceMemberRepository
                 .findByWorkspaceAndId(workspace, memberId)
                 .orElseThrow(()->
-                new RuntimeException("Member not found"));
+                new BadRequestException("Member not found"));
 
         if(!member.getWorkspace().getId().equals(workspaceId)){
-            throw new RuntimeException("Member does not belongs to this workspace");
+            throw new BadRequestException("Member does not belongs to this workspace");
         }
 
         if(member.getRole()== WorkspaceRole.OWNER){
-            throw new RuntimeException("Owner cannot be removed");
+            throw new BadRequestException("Owner cannot be removed");
         }
 
         workspaceMemberRepository.delete(member);

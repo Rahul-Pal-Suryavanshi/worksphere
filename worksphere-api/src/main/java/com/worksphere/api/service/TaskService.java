@@ -10,6 +10,9 @@ import com.worksphere.api.entity.Task;
 import com.worksphere.api.entity.User;
 import com.worksphere.api.entity.Workspace;
 import com.worksphere.api.enums.TaskStatus;
+import com.worksphere.api.exception.BadRequestException;
+import com.worksphere.api.exception.ResourceNotFoundException;
+import com.worksphere.api.exception.UnauthorizedException;
 import com.worksphere.api.repository.ProjectRepository;
 import com.worksphere.api.repository.TaskRepository;
 import com.worksphere.api.repository.UserRepository;
@@ -39,23 +42,23 @@ public class TaskService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User Not Found"));
+                        new ResourceNotFoundException("User Not Found"));
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(()->
-                        new RuntimeException("Project Not Found"));
+                        new ResourceNotFoundException("Project Not Found"));
 
         Workspace workspace = project.getWorkspace();
 
         if(!workspace.getOwner().getId()
                 .equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to access this project");
+            throw new UnauthorizedException("You are not allowed to access this project");
         }
 
         User assignedUser = userRepository
                 .findByEmail(request.getAssignedUserEmail())
                 .orElseThrow(()->
-                        new RuntimeException("Assigned User Not Found"));
+                        new BadRequestException("Assigned User Not Found"));
 
         Task task = Task.builder()
                 .title(request.getTitle())
@@ -91,17 +94,17 @@ public class TaskService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User Not Found"));
+                        new ResourceNotFoundException("User Not Found"));
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(()->
-                        new RuntimeException("Project Not Found"));
+                        new ResourceNotFoundException("Project Not Found"));
 
         Workspace workspace = project.getWorkspace();
 
         if(!workspace.getOwner().getId()
                 .equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to access this project");
+            throw new UnauthorizedException("You are not allowed to access this project");
         }
 
         return taskRepository.findByProject(project)
@@ -129,16 +132,16 @@ public class TaskService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User Not Found"));
+                        new ResourceNotFoundException("User Not Found"));
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(()->
-                        new RuntimeException("Task Not Found"));
+                        new ResourceNotFoundException("Task Not Found"));
 
         Workspace workspace = task.getProject().getWorkspace();
 
         if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to update this task");
+            throw new UnauthorizedException("You are not allowed to update this task");
         }
 
         task.setStatus(request.getStatus());
@@ -166,21 +169,21 @@ public class TaskService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User Not found"));
+                        new ResourceNotFoundException("User Not found"));
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(()->
-                        new RuntimeException("Task Not Found"));
+                        new ResourceNotFoundException("Task Not Found"));
 
         Workspace workspace = task.getProject().getWorkspace();
 
         if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to update this task");
+            throw new UnauthorizedException("You are not allowed to update this task");
         }
 
         User assignedUser = userRepository.findByEmail(request.getAssignedUserEmail())
                 .orElseThrow(()->
-                        new RuntimeException("Assigned User Not Found"));
+                        new ResourceNotFoundException("Assigned User Not Found"));
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -207,16 +210,16 @@ public class TaskService {
 
         User loggedInUser = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User Not found"));
+                        new ResourceNotFoundException("User Not found"));
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(()->
-                        new RuntimeException("Task Not Found"));
+                        new ResourceNotFoundException("Task Not Found"));
 
         Workspace workspace = task.getProject().getWorkspace();
 
         if(!workspace.getOwner().getId().equals(loggedInUser.getId())){
-            throw new RuntimeException("You are not allowed to delete this task");
+            throw new UnauthorizedException("You are not allowed to delete this task");
         }
 
         taskRepository.delete(task);

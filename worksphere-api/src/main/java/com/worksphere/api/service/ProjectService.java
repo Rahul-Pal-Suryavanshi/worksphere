@@ -5,6 +5,8 @@ import com.worksphere.api.dto.ProjectResponse;
 import com.worksphere.api.entity.Project;
 import com.worksphere.api.entity.User;
 import com.worksphere.api.entity.Workspace;
+import com.worksphere.api.exception.ResourceNotFoundException;
+import com.worksphere.api.exception.UnauthorizedException;
 import com.worksphere.api.repository.ProjectRepository;
 import com.worksphere.api.repository.UserRepository;
 import com.worksphere.api.repository.WorkspaceRepository;
@@ -32,15 +34,15 @@ public class ProjectService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User not found"));
+                        new ResourceNotFoundException("User not found"));
 
         Workspace workspace =workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         if(!workspace.getOwner().getId().equals(user.getId())){
-            throw new RuntimeException("You are not allowed to access this workspace");
+            throw new UnauthorizedException("You are not allowed to access this workspace");
         }
 
         Project project =Project.builder()
@@ -69,15 +71,15 @@ public class ProjectService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->
-                        new RuntimeException("User not found"));
+                        new ResourceNotFoundException("User not found"));
 
         Workspace workspace = workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(()->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found"));
 
         if(!workspace.getOwner().getId().equals(user.getId())){
-            throw new RuntimeException("You are not allowed to access this workspace");
+            throw new UnauthorizedException("You are not allowed to access this workspace");
         }
 
         return projectRepository.findByWorkspace(workspace)

@@ -4,6 +4,7 @@ package com.worksphere.api.controller;
 import com.worksphere.api.dto.ProjectRequest;
 import com.worksphere.api.dto.ProjectResponse;
 import com.worksphere.api.service.ProjectService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ProjectController {
     @PostMapping("/{workspaceId}")
     public ProjectResponse createProject(
             @PathVariable UUID workspaceId,
-            @RequestBody ProjectRequest request,
+            @Valid @RequestBody ProjectRequest request,
             Authentication authentication
             ){
 

@@ -2,6 +2,7 @@ package com.worksphere.api.controller;
 
 import com.worksphere.api.dto.*;
 import com.worksphere.api.service.WorkspaceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ public class WorkspaceController {
 
     @PostMapping
     public WorkspaceResponse createWorkspace(
-            @RequestBody WorkspaceRequest request,
+            @Valid @RequestBody WorkspaceRequest request,
             Authentication authentication
             ){
         return workspaceService.createWorkspace(
@@ -36,7 +37,7 @@ public class WorkspaceController {
     @PostMapping("/{workspaceId}/members")
     public WorkspaceMemberResponse inviteMember(
             @PathVariable UUID workspaceId,
-            @RequestBody InviteMemberRequest request,
+            @Valid @RequestBody InviteMemberRequest request,
             Authentication authentication
             ){
         return workspaceService.inviteMember(
@@ -58,7 +59,7 @@ public class WorkspaceController {
     public WorkspaceMemberResponse updateMemberRole(
             @PathVariable UUID workspaceId,
             @PathVariable UUID memberId,
-            @RequestBody UpdateMemberRoleRequest request,
+            @Valid @RequestBody UpdateMemberRoleRequest request,
             Authentication authentication
             ){
         return workspaceService.updateMemberRole(
