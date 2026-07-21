@@ -19,12 +19,20 @@ public class WorkspaceController {
     private final WorkspaceService workspaceService;
 
     @PostMapping
-    public WorkspaceResponse createWorkspace(
+    public ResponseEntity<ApiResponse<WorkspaceResponse>> createWorkspace(
             @Valid @RequestBody WorkspaceRequest request,
             Authentication authentication
             ){
-        return workspaceService.createWorkspace(
+        WorkspaceResponse response = workspaceService.createWorkspace(
                 request, authentication);
+
+        return ResponseEntity.ok(
+                ApiResponse.<WorkspaceResponse>builder()
+                        .success(true)
+                        .message("Workspace created successfully")
+                        .data(response)
+                        .build()
+        );
     }
 
     @GetMapping

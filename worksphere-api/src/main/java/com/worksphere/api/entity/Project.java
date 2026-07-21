@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Project {
+public class Project extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

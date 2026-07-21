@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Workspace {
+public class Workspace extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

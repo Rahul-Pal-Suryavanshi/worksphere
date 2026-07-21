@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Task {
+public class Task extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
